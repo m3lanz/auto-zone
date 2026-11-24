@@ -3,6 +3,8 @@ technical abilities. Mostly getting comfortable with Python, Django, database re
 
 Frontend was developed using Django template syntax, Tailwind CSS (via CDN), daisyUI library (https://daisyui.com/)
 
+Live demo: melanz.pythonanywhere.com
+
 Features: 
 - User authentication and authorization
 - Car listing filtering
