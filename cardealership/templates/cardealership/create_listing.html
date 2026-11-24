@@ -1,0 +1,16 @@
+{% extends 'cardealership/base_templates/base.html' %}
+
+{% block content %}
+
+<div class="flex">
+    <form method="post" enctype="multipart/form-data" class="max-w-2xl mx-auto">
+        {% csrf_token %}
+        <h1 class="font-bold text-xl mb-2">Create a listing</h1>
+        {{ listing_form.as_p }}
+        {{ image_form }}
+
+        <button type="submit" class="btn btn-primary mt-3">Post</button>
+    </form>
+</div>
+
+{% endblock %}

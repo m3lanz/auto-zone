@@ -1,0 +1,227 @@
+{% extends "cardealership/base_templates/base.html" %}
+
+{% block content %}
+<div class="grid grid-cols-[45%_1fr] gap-12 items-start">
+
+    <section>
+        <div class="relative h-[420px] rounded-2xl overflow-hidden bg-base-200">
+            {% for image in car.images.all %}
+            <img src="{{ image.image.url }}"
+                 class="gallery-image absolute inset-0 w-full h-full object-cover {% if forloop.first %}block{% else %}hidden{% endif %}"
+                 alt="{{ car }}">
+            {% endfor %}
+            <button class="btn btn-circle absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white"
+                    type="button"
+                    id="next-image">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="lucide lucide-chevron-right preview-icon">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </button>
+            <button class="btn btn-circle absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 p-2 text-white"
+                    type="button"
+                    id="prev-image">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                     class="lucide lucide-chevron-left preview-icon">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+            </button>
+            <div class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-lg" id="image-counter"></div>
+        </div>
+    </section>
+
+
+    <aside>
+
+        <h1 class="text-3xl font-bold">
+            {{ car.brand }} {{ car.model }}
+        </h1>
+
+        <a class="text-sm" href="{% url 'profile' car.seller.username %}">Listed by {{ car.seller }}</a>
+
+        <p class="text-4xl font-bold text-primary mt-4">
+            ${{ car.price }}
+        </p>
+
+        <div class="mt-8 space-y-4">
+
+            {% for label, spec in specs.items %}
+            <div class="flex justify-between border-b pb-3">
+                <span class="text-gray-500">{{ label }}</span>
+                <span class="font-semibold">{{ spec }}</span>
+            </div>
+            {% endfor %}
+
+
+            <div class="flex gap-3">
+                {% if request.user == car.seller %}
+                <form method="post" action="{% url 'delete_listing' car.pk %}">
+                    {% csrf_token %}
+                    <button
+                            type="submit"
+                            class="btn btn-error"
+                            onclick="return confirm('Are you sure you want to delete this listing?');">
+                        <!-- confirmation window -->
+                        Delete listing
+                    </button>
+                </form>
+                <a class="btn btn-primary" href="{% url 'edit_listing' car.pk %}">Edit listing</a>
+                {% endif %}
+                <form action="{% url 'favorite_toggle' car.pk %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+                    <button type="submit">
+                        {% if not is_active %}
+                        <i data-lucide="bookmark" class="w-auto align-center"></i>
+                        {% else %}
+                        <i data-lucide="bookmark" class="fill-current"></i>
+                        {% endif %}
+                    </button>
+                </form>
+            </div>
+
+
+        </div>
+
+    </aside>
+
+    <div class="desc">
+        <h2 class="text-xl font-bold mb-3">
+            Description:
+
+            <p class="text-base">{{ car.description }}</p>
+        </h2>
+    </div>
+
+    <div class="comments">
+        <h1 class="text-xl font-bold mb-3">Comments ({{ car.comments.count }})</h1>
+        <form action="{% url 'post_comment' car.pk %}" method="post">
+            {% csrf_token %}
+            {{ comment_form }}
+
+            <button type="submit" class="btn btn-success font-bold mt-3 mb-3">Post</button>
+        </form>
+        {% for comment in car.comments.all %}
+
+        <div class="card card-body card-border border-3 mb-3 shadow-sm">
+            <div class="flex min-w-0 gap-3">
+                <div class="w-10 h-10 object-cover shrink-0"><img src="{{ comment.author.profile.pfp.url }}"
+                                                                  alt="profile pic"
+                                                                  class="rounded-full">
+                </div>
+                <div class="flex flex-1 min-w-0 justify-between items-start">
+                    <span class="font-bold text-md">
+                        <a href="{% url 'profile' comment.author.username %}">{{ comment.author }}</a>
+                    </span>
+
+                    {% if request.user == comment.author %}
+                    <div class="flex items-start gap-3">
+                        <form action="{% url 'delete_comment' comment.pk %}" method="post">
+                            {% csrf_token %}
+
+                            <button
+                                    type="submit"
+                                    class="text-error"
+                                    onclick="return confirm('Are you sure you want to delete your comment?')">Delete
+                            </button>
+                        </form>
+                        <details class="dropdown dropdown-end">
+                            <summary class="text-primary font-medium cursor-pointer">
+                                Edit
+                            </summary>
+
+                            <div class="dropdown-content z-10 bg-base-100 p-4 shadow-lg rounded-box w-80">
+                                <form action="{% url 'update_comment' comment.pk %}" method="post">
+                                    {% csrf_token %}
+
+                                    {{ comment_form.as_p }}
+
+                                    <button
+                                            type="submit"
+                                            class="text-primary"
+                                            onclick="return confirm('Save your comment?')">Confirm
+                                    </button>
+                                </form>
+                            </div>
+                        </details>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+            <p class="text-sm">{{ comment.text }}</p>
+        </div>
+
+        {% empty %}
+        <p>No comments yet...</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentIndex = 0;
+    let images = document.querySelectorAll('.gallery-image');
+    let prevButton = document.getElementById('prev-image');
+    let nextButton = document.getElementById('next-image');
+    let imageCounter = document.getElementById('image-counter');
+
+    showImage()
+
+    nextButton.addEventListener('click', function () {
+        currentIndex++;
+        showImage();
+    });
+
+    prevButton.addEventListener('click', function () {
+        currentIndex--;
+        showImage();
+    })
+
+    function showImage() {
+        images.forEach(function (image, index) {
+            if (index === currentIndex) {
+                image.classList.add('block');
+                image.classList.remove('hidden');
+            } else {
+                image.classList.add('hidden');
+                image.classList.remove('block');
+            }
+
+        });
+
+        if (images.length <= 1) {
+            prevButton.classList.add('hidden')
+            prevButton.classList.remove('block')
+            nextButton.classList.add('hidden')
+            nextButton.classList.remove('block')
+        } else {
+            if (currentIndex === 0) {
+                prevButton.classList.add('hidden')
+                prevButton.classList.remove('block')
+            } else {
+                prevButton.classList.add('block')
+                prevButton.classList.remove('hidden')
+            }
+
+            if (currentIndex === images.length - 1) {
+                nextButton.classList.add('hidden')
+                nextButton.classList.remove('block')
+            } else {
+                nextButton.classList.add('block')
+                nextButton.classList.remove('hidden')
+            }
+        }
+
+        imageCounter.textContent = images.length > 0 ? `${currentIndex + 1} / ${images.length}` : '0 / 0'
+
+
+    }
+</script>
+{% endblock %}

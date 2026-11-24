@@ -1,0 +1,32 @@
+{% extends "cardealership/base_templates/base.html" %}
+
+{% block content %}
+
+<div class="grid grid-cols-[240px_1fr] gap-8 items-start">
+    <aside class="w-60">
+        {% include "cardealership/components/_filters.html" %}
+    </aside>
+    <section>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {% for car in cars %}
+            {% include "cardealership/components/_car_card.html" %}
+            {% endfor %}
+        </div>
+
+        <div class="flex justify-center mt-8">
+        {% if page_obj.has_other_pages %}
+        <div class="join">
+            {% if page_obj.has_previous %}
+            <a class="join-item btn" href="{% querystring page=page_obj.previous_page_number %}">«</a>
+            {% endif %}
+            <button class="join-item btn">Page {{ page_obj.number }}</button>
+            {% if page_obj.has_next %}
+            <a class="join-item btn" href="{% querystring page=page_obj.next_page_number %}">»</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        </div>
+    </section>
+</div>
+
+{% endblock %}

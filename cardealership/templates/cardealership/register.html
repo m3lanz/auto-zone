@@ -1,0 +1,20 @@
+{% extends 'cardealership/base_templates/base.html' %}
+
+{% block content %}
+
+<div class="flex items-center justify-center">
+    <div class="w-96 bg-base-100 p-6">
+        <h1 class="text-3xl font-bold">Account creation</h1>
+        <form method="post" class="mt-2">
+            {% csrf_token %}
+
+            {{ form }}
+
+            <button class="btn btn-primary w-full mt-4" type="submit">
+                Create
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

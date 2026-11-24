@@ -1,0 +1,77 @@
+<form method="get" class="space-y-4">
+    <div>
+
+        <div>
+            <h1 class="font-bold text-lg">Sort by:</h1>
+            <select name="sort" class="select bordered w-full mt-2">
+                <option value="" {% if not selected_sort %}selected{% endif %}>Newest</option>
+                <option value="added_at" {% if selected_sort == 'added_at' %}selected{% endif %}>Oldest</option>
+                <option value="price" {% if selected_sort == 'price' %}selected{% endif %}>Low to high</option>
+                <option value="-price" {% if selected_sort == '-price' %}selected{% endif %}>High to low</option>
+            </select>
+        </div>
+        <div>
+            <select name="brand" class="select bordered w-full mt-2">
+                <option value="">All brands</option>
+                {% for brand in brands %}
+                <option value="{{ brand.name }}" {% if brand.name == selected_brand %}selected{% endif %}>
+                    {{ brand.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <hr class="border-base-300 my-4">
+    <div class="flex flex-col gap-6">
+        <h2 class="font-bold text-lg">Transmission</h2>
+        <label>
+            <input type="radio" name="transmission" value="Manual" class="radio radio-sm radio-primary" {% if selected_transmission == 'Manual' %}checked{% endif %}>
+            Manual
+        </label>
+        <label>
+            <input type="radio" name="transmission" value="Automatic" class="radio radio-sm radio-primary" {% if selected_transmission == 'Automatic' %}checked{% endif %}>
+            Automatic
+        </label>
+        <label>
+            <input type="radio" name="transmission" value="" class="radio radio-sm radio-primary" {% if not selected_transmission %}checked{% endif %}>
+            Any
+        </label>
+    </div>
+    <hr class="border-base-300 my-4">
+    <div class="flex flex-col gap-3">
+        <h2 class="font-bold text-lg">Fuel type</h2>
+        {% for fuel in fuel_types %}
+        <label class="flex items-center gap-2">
+            <input
+                    type="checkbox"
+                    class="checkbox checkbox-primary"
+                    name="fuel_type"
+                    value="{{ fuel }}"
+                    {% if fuel in selected_fuel_types %}checked{% endif %}
+            >
+            {{ fuel }}
+        </label>
+        {% endfor %}
+    </div>
+
+    <hr class="border-base-300 my-4">
+    <div class="flex flex-col gap-3">
+        <h2 class="font-bold text-lg">Category</h2>
+        {% for body in body_types %}
+        <label class="flex items-center gap-2">
+            <input
+                    type="checkbox"
+                    class="checkbox checkbox-primary"
+                    name="body_type"
+                    value="{{ body }}"
+                    {% if body in selected_body_types %}checked{% endif %}
+            >
+            {{ body }}
+        </label>
+        {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary w-full mt-3">
+        Apply
+    </button>
+</form>

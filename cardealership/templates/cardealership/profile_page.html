@@ -1,0 +1,52 @@
+{% extends "cardealership/base_templates/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="grid grid-cols-[20%_1fr] gap-12 items-start mx-20">
+
+    <section class="flex gap-8">
+
+        <div class="w-56 flex flex-col items-center justify-center ml-6 mt-8">
+            {% if profile.pfp %}
+            <img src="{{ profile.pfp.url }}" alt="Profile picture" class="rounded-full w-56 h-56 shrink-0">
+            {% endif %}
+        </div>
+
+    </section>
+
+
+    <aside class="card shadow-lg p-6">
+        <div class="flex flex-col gap-2">
+            <h2 class="text-lg font-semibold">Username: {{ profile_user }}</h2>
+            {% if profile_user.first_name and profile_user.last_name %}
+            <h2 class="text-lg font-semibold">First name: {{ profile_user.first_name }}</h2>
+            <h2 class="text-lg font-semibold">Last name: {{ profile_user.last_name }}</h2>
+            {% endif %}
+            <h2 class='text-lg font-semibold'>Contact information: {{ profile.contact_info }}</h2>
+            <h2 class="text-lg font-semibold">Location: {% if profile.location %}{{ profile.location }}{% else %}Not
+                specified{% endif %}</h2>
+            <h2 class="text-lg font-semibold">Date joined: {{ profile_user.date_joined }}</h2>
+        </div>
+        <div class="mt-5">
+            {% if request.user == profile_user %}
+            <a class="btn btn-primary" href="{% url 'edit_profile' %}">Edit profile</a>
+            <a class="btn btn-secondary" href="{% url 'edit_password' %}">Change password</a>
+            {% endif %}
+        </div>
+    </aside>
+
+</div>
+<div class="mx-20 mt-10">
+    <h2 class="font-bold text-2xl">Cars on sale: {{ user_listings|length }}</h2>
+    <div class="grid grid-cols-4 gap-6 w-300 mt-4">
+        {% for car in user_listings %}
+        {% include "cardealership/components/_car_card.html" %}
+        {% empty %}
+        <p class="text-md">The user does not have any listings yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}
+

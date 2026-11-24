@@ -1,0 +1,42 @@
+<div>
+    <div class="card w-full bg-base-100 shadow-lg transition hover:shadow-xl hover:translate-y-1 overflow-hidden">
+        <a href="{% url 'car_detail' car.pk %}">
+
+            <figure class="h-52">
+                {% with first_image=car.images.first %}
+                {% if first_image %}
+                <img
+                        src="{{ first_image.image.url }}"
+                        alt="{{ car }}"
+                        class="w-full h-full object-cover"/>
+                {% endif %}
+                {% endwith %}
+            </figure>
+        </a>
+        <div class="card-body p-3">
+            <div class="flex items-center justify-between">
+                <h2 class="font-bold text-lg">${{ car.price }}</h2>
+
+
+                <form action="{% url 'favorite_toggle' car.pk %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+                    <button type="submit">
+                        {% if car.pk not in favorite_ids %}
+                        <i data-lucide="bookmark" class="w-auto align-center"></i>
+                        {% else %}
+                        <i data-lucide="bookmark" class="fill-current"></i>
+                        {% endif %}
+                        <p>{{ car.favorited_by.count }}</p>
+                    </button>
+                </form>
+
+            </div>
+            <p class="font-semibold">{{ car.brand }} {{ car.model }}</p>
+            <p class="text-sm text-gray-500">{{ car.transmission }}</p>
+        </div>
+    </div>
+</div>
+
+

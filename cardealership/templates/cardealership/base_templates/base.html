@@ -1,0 +1,73 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AutoZone</title>
+
+    {% include 'cardealership/components/_scripts.html' %}
+
+</head>
+
+<body>
+
+<div class="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+    <div class="navbar-start">
+        <a href="{% url 'main' %}" class="btn btn-ghost text-xl">AutoZone</a>
+    </div>
+
+    <div class="navbar-center gap-3">
+
+        <form method="get" class="flex items-center gap-2">
+            <input type="text" name="q" value="{{ request.GET.q }}" class="input input-bordered"
+                   placeholder="Search...">
+            <button type="submit" class="btn">Confirm</button>
+        </form>
+        {% if user.is_authenticated %}
+        <a class="btn btn-ghost" href="{% url 'profile' user.username %}">My profile</a>
+        <a class="btn btn-ghost" href="{% url 'create_listing' %}">Create a listing</a>
+        <a class="btn btn-ghost" href="{% url 'favorite_page' %}">Saved listings</a>
+        {% endif %}
+
+    </div>
+    <div class="navbar-end">
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="btn" type="submit">Log out</button>
+        </form>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn">Sign in</a>
+        {% endif %}
+    </div>
+</div>
+
+<main class="max-w-[1400px] mx-auto px-6 py-8 min-h-screen">
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer class="footer footer-horizontal footer-center bg-base-200 text-base-content rounded p-10">
+    <nav class="grid grid-flow-col gap-4">
+        <a class="link link-hover">About us</a>
+        <a class="link link-hover">Contact</a>
+        <a class="link link-hover">Jobs</a>
+        <a class="link link-hover">Press kit</a>
+    </nav>
+
+    <aside>
+        <p>Copyright © 2026 - All rights reserved by AutoZone</p>
+    </aside>
+</footer>
+
+{% block scripts %}
+{% endblock %}
+
+</body>
+
+
+</html>

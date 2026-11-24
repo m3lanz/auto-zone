@@ -1,0 +1,29 @@
+{% extends 'cardealership/base_templates/base.html' %}
+
+{% block content %}
+
+<div class="flex">
+    <form method="post" enctype="multipart/form-data" class="max-w-2xl mx-auto">
+        {% csrf_token %}
+        <h1 class="font-bold text-xl mb-2">Edit a listing</h1>
+        {{ listing_form.as_p }}
+        {% for image in images %}
+        <div class="flex items-center gap-4 p-4 border border-base-300 rounded-lg">
+            <img src="{{ image.image.url }}" alt="Car image" class="w-40 h-28 object-cover rounded-md">
+
+            <label class="flex items-center gap-2 cursor pointer">
+                <input type="checkbox" name="delete_images" value="{{ image.pk }}" class="checkbox checkbox-error">
+                Remove image
+            </label>
+        </div>
+        {% endfor %}
+        <div class="mt-8 space-y-3">
+        <h3>Add new images</h3>
+        {{ image_form.image }}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Submit changes</button>
+    </form>
+</div>
+
+{% endblock %}
